@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "keyboardUtils.hpp"
+#include "Colors.hpp"
 
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
@@ -33,7 +34,7 @@ extern "C" void clearScreen()
     vidMemory = 0xb8000;
 }
 
-extern "C" void charPrint(int chr)
+extern "C" void charPrint(int chr,uint8_t color = 0x0F)
 {
     if(vidMemory < 0xB8F95)
     {
@@ -44,6 +45,7 @@ extern "C" void charPrint(int chr)
             characters += 80;
         } else {
             *(char*)vidMemory = chr;
+            *(char*)(vidMemory + 1) = color;
             vidMemory += 2;
         }
         characters += 1;
@@ -54,12 +56,12 @@ extern "C" void charPrint(int chr)
 
 }
 
-extern "C" void strPrint(const char str[])
+extern "C" void strPrint(const char str[], uint8_t color = 0x0F)
 {
     int i = 0;
     while(str[i] != '\0')
     {
-        charPrint(str[i]);
+        charPrint(str[i],color);
         i += 1;
     }
 }
@@ -71,12 +73,12 @@ extern "C" void strPrint(const char str[])
 extern "C" void printROSLogo()
 {
     //Print ROS in ASCII art
-    strPrint("\xDB\xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB \n");
-    strPrint("\xDB    \xDB  \xDB   \xDB  \xDB \n");
-    strPrint("\xDB\xDB\xDB\xDB\xDB\xDB  \xDB   \xDB  \xDB\xDB\xDB\xDB\xDB \n");
-    strPrint("\xDB   \xDB   \xDB   \xDB      \xDB \n");
-    strPrint("\xDB   \xDB   \xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB \n\n");
-    strPrint(" \xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF \n\n");
+    strPrint("\xDB\xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB \n",colorBrown);
+    strPrint("\xDB    \xDB  \xDB   \xDB  \xDB \n",colorBrown);
+    strPrint("\xDB\xDB\xDB\xDB\xDB\xDB  \xDB   \xDB  \xDB\xDB\xDB\xDB\xDB \n",colorBrown);
+    strPrint("\xDB   \xDB   \xDB   \xDB      \xDB \n",colorBrown);
+    strPrint("\xDB   \xDB   \xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB \n\n",colorBrown);
+    strPrint(" \xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF \n\n",colorBrown);
 }
 
 // NORMAL DECLARATIONS
@@ -87,32 +89,46 @@ extern "C" void main() {
 
     printROSLogo();
 
-    strPrint("Welcome to the ROS OS \n\n");
+    strPrint("Welcome to the");
+    strPrint(" ROS OS \n\n",colorRed);
 
-    strPrint("Press 'C' to enter command mode | Press 'S' to shutdown \n");
+    strPrint("Press '");
+    charPrint('C',colorRed);
+    strPrint("' to enter command mode | Press '");
+    charPrint('S',colorRed);
+    strPrint("' to shutdown \n");
+
+    bool bgdraw = false;
 
     while(1)
     {
         uint8_t scancode = read_key_polling();
-
-        switch (scancode)
+        
+        if(!onCommandMode)
         {
-        case 0x01:
-            clearScreen();
-            break;
-        case 0x9F:
-            shutdownAPM();
-            break;
-        case 0x2E:
-            clearScreen();
-            strPrint("Welcome to command mode \n");
-            strPrint("Type 'exit' to quit \n");
-            strPrint("Enjoy! \n");
-            onCommandMode = true;
-            break;
-            
-        default:
-            break;
+            switch (scancode)
+            {
+            case 0x01:
+                clearScreen();
+                break;
+            case 0x9F:
+                shutdownAPM();
+                break;
+            case 0x2E:
+                clearScreen();
+                strPrint("Welcome to command mode \n");
+                strPrint("Type 'exit' to quit \n");
+                strPrint("Enjoy! \n");
+                onCommandMode = true;
+                break;
+
+            default:
+                break;
+            }
+        }
+        else
+        {
+            charPrint(scancodeToIntChar(scancode));
         }
 
     }
