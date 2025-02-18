@@ -1,5 +1,6 @@
 #include "VGA.hpp"
 #include <stdint.h>
+#include "Colors.hpp"
 
 #define VGA_MISC_PORT 0x3C2
 #define VGA_CRTC_INDEX 0x3D4
@@ -10,6 +11,8 @@
 #define VGA_GFX_DATA  0x3CF
 
 volatile uint8_t* vga_memory = (uint8_t*) 0xA0000;
+unsigned int vidMemory = 0xb8000;
+int characters = 0;
 
 static inline void outb(uint16_t port, uint8_t val) {
     asm volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
@@ -52,4 +55,58 @@ void GRAPHICSMODEClearScreen(uint8_t color) {
 void GRAPHICSMODEDrawPixel(int x, int y, uint8_t color) {
     unsigned short offset = y * 320 + x;
     vga_memory[offset] = color;
+}
+
+void clearScreen()
+{
+    for(int i = 0; i < characters; i++)
+    {
+        *(char*)(vidMemory - 2)= ' ';
+        vidMemory -= 2;
+    }
+    characters = 0;
+    vidMemory = 0xb8000;
+}
+
+void charPrint(int chr,uint8_t color = 0x0F)
+{
+    if(vidMemory < 0xB8F95)
+    {
+        if (chr == '\n') {
+            unsigned int offset = vidMemory - 0xB8000;
+            unsigned int row = offset / (VGA_WIDTH * 2);
+            vidMemory = 0xB8000 + (row + 1) * VGA_WIDTH * 2;
+            characters += 80;
+        } else {
+            *(char*)vidMemory = chr;
+            *(char*)(vidMemory + 1) = color;
+            vidMemory += 2;
+        }
+        characters += 1;
+    }
+    else{
+        clearScreen();
+    }
+
+}
+
+void strPrint(const char str[], uint8_t color = 0x0F)
+{
+    int i = 0;
+    while(str[i] != '\0')
+    {
+        charPrint(str[i],color);
+        i += 1;
+    }
+}
+
+void printROSLogo()
+{
+    //Print ROS in ASCII art
+    strPrint("\xDB\xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB \n",colorBrown);
+    strPrint("\xDB    \xDB  \xDB   \xDB  \xDB \n",colorBrown);
+    strPrint("\xDB\xDB\xDB\xDB\xDB\xDB  \xDB   \xDB  \xDB\xDB\xDB\xDB\xDB \n",colorBrown);
+    strPrint("\xDB   \xDB   \xDB   \xDB      \xDB \n",colorBrown);
+    strPrint("\xDB   \xDB   \xDB\xDB\xDB\xDB\xDB  \xDB\xDB\xDB\xDB\xDB \n\n",colorBrown);
+    strPrint(" \xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF \n\n",colorBrown);
 }
