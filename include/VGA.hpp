@@ -7,7 +7,7 @@ void VGAMODEGRAPHICS();
 
 extern volatile uint8_t* vga_memory;
 
-void clear_screen(uint8_t color);
-
+void GRAPHICSMODEClearScreen(uint8_t color);
+void GRAPHICSMODEDrawPixel(int x, int y, uint8_t color);
 
 #endif

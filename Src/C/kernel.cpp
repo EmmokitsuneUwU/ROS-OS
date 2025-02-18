@@ -127,9 +127,16 @@ extern "C" void main() {
                 onCommandMode = true;
                 break;
             case 0x22:
-                onGraphicsMode = true;
                 VGAMODEGRAPHICS();
-                clear_screen(0x01);
+                GRAPHICSMODEClearScreen(0x01);
+                for(int y = 0; y < 6; y++)
+                {
+                    for(int i = 0; i < 50; i++)
+                    {
+                        GRAPHICSMODEDrawPixel(i +120, y+10, 0x04);
+                    }
+                }
+                onGraphicsMode = true;
                 break;
 
             default:
@@ -142,7 +149,7 @@ extern "C" void main() {
         }
         else if (onGraphicsMode)
         {
-            /* code */
+
         }
 
     }

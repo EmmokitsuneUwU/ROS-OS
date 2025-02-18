@@ -45,7 +45,11 @@ void VGAMODEGRAPHICS() {
     outb(0x3D8, 0xA0);
 }
 
-void clear_screen(uint8_t color) {
+void GRAPHICSMODEClearScreen(uint8_t color) {
     for (int i = 0; i < 320 * 200; i++)
         vga_memory[i] = color;
+}
+void GRAPHICSMODEDrawPixel(int x, int y, uint8_t color) {
+    unsigned short offset = y * 320 + x;
+    vga_memory[offset] = color;
 }
