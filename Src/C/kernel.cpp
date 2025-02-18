@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "keyboardUtils.hpp"
 #include "Colors.hpp"
+#include "VGA.hpp"
 
 #define VGA_WIDTH 80
 #define VGA_HEIGHT 25
@@ -9,8 +10,10 @@ unsigned int vidMemory;
 int characters;
 
 char commandsBuffer[32];
+int commandsBufferIndex = 0;
 
 bool onCommandMode = false;
+bool onGraphicsMode = false;
 
 // BASIC DECLARATIONS
 
@@ -96,7 +99,9 @@ extern "C" void main() {
     charPrint('C',colorRed);
     strPrint("' to enter command mode | Press '");
     charPrint('S',colorRed);
-    strPrint("' to shutdown \n");
+    strPrint("' to shutdown | Press '");
+    charPrint('G',colorRed);
+    strPrint("' to enter graphics mode \n");
 
     bool bgdraw = false;
 
@@ -104,7 +109,7 @@ extern "C" void main() {
     {
         uint8_t scancode = read_key_polling();
         
-        if(!onCommandMode)
+        if(!onCommandMode && !onGraphicsMode)
         {
             switch (scancode)
             {
@@ -121,14 +126,23 @@ extern "C" void main() {
                 strPrint("Enjoy! \n");
                 onCommandMode = true;
                 break;
+            case 0x22:
+                onGraphicsMode = true;
+                VGAMODEGRAPHICS();
+                clear_screen(0x01);
+                break;
 
             default:
                 break;
             }
         }
-        else
+        else if (onCommandMode)
         {
-            charPrint(scancodeToIntChar(scancode));
+            /* code */
+        }
+        else if (onGraphicsMode)
+        {
+            /* code */
         }
 
     }
