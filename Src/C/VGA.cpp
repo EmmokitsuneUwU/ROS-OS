@@ -13,6 +13,8 @@
 volatile uint8_t* vga_memory = (uint8_t*) 0xA0000;
 unsigned int vidMemory = 0xb8000;
 int characters = 0;
+bool onCommandMode = false;
+bool onGraphicsMode = false;
 
 static inline void outb(uint16_t port, uint8_t val) {
     asm volatile ("outb %0, %1" : : "a"(val), "Nd"(port));

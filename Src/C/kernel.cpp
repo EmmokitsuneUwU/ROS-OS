@@ -3,12 +3,10 @@
 #include "Colors.hpp"
 #include "VGA.hpp"
 #include "Util.hpp"
+#include "Pong.hpp"
 
 char commandsBuffer[32];
 int commandsBufferIndex = 0;
-
-bool onCommandMode = false;
-bool onGraphicsMode = false;
 
 bool isKeyPressed[256] = {false};
 
@@ -56,9 +54,9 @@ extern "C" void main() {
                         case 0x22:
                             VGAMODEGRAPHICS();
                             GRAPHICSMODEClearScreen(0x01);
-                            for (int y = 0; y < 6; y++) {
+                            for (int y = 0; y < 6 ; y++) {
                                 for (int i = 0; i < 50; i++) {
-                                    GRAPHICSMODEDrawPixel(i + 120, y + 10, 0x04);
+                                    GRAPHICSMODEDrawPixel(i +100, y + 9, 0x04);
                                 }
                             }
                             onGraphicsMode = true;
@@ -77,7 +75,7 @@ extern "C" void main() {
                     }
                     else if (scancode == 0x1C)
                     {
-                        clearScreen();
+                        charPrint('\n', colorBrightWhite);
                         strPrint("OK \n", colorBrightWhite);
 
                         if(StrCmp(commandsBuffer, "EXIT"))
@@ -99,8 +97,26 @@ extern "C" void main() {
                             charPrint('G', colorRed);
                             strPrint("' to enter graphics mode \n", colorBrightWhite);
                         }
-                        
-                        // Clean command buffer
+                        if(StrCmp(commandsBuffer, "CLEAR"))
+                        {
+                            clearScreen();
+                        }
+                        if(StrCmp(commandsBuffer, "KERNEL"))
+                        {
+                            strPrint("Running ROS Kernel version: ", colorBrightWhite);
+                            strPrint(kernelVersion, colorRed);
+                            strPrint("\n", colorBrightWhite);
+                        }
+                        if(StrCmp(commandsBuffer, "PONG"))
+                        {
+                            pongInit();
+                            while(1)
+                            {
+                                pongUpdate();
+                            }
+                        }
+
+                        // Clear command buffer
                         for(int i = 0; i < 32; i++)
                         {
                             commandsBuffer[i] = '\0';

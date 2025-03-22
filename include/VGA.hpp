@@ -7,6 +7,9 @@
 extern unsigned int vidMemory;
 extern int characters;
 
+extern bool onCommandMode;
+extern bool onGraphicsMode;
+
 void VGAMODETEXT();
 void VGAMODEGRAPHICS();
 extern void clearScreen();
