@@ -20,6 +20,6 @@ extern void printROSLogo();
 extern volatile uint8_t* vga_memory;
 
 void GRAPHICSMODEClearScreen(uint8_t color);
-void GRAPHICSMODEDrawPixel(int x, int y, uint8_t color);
+void GRAPHICSMODEDrawPixel(int pos_x, int pos_y, uint8_t VGA_COLOR);
 
 #endif

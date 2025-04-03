@@ -1,1 +1,1 @@
-times 1474560  db 0
+times 10240 db 0

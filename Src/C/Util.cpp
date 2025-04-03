@@ -2,7 +2,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-char kernelVersion[6] = "0.0.4";
+#define MAX_ARGS 5
+
+char kernelVersion[6] = "0.0.7";
 
 void cpuid(int code, uint32_t* a, uint32_t* d) {
     asm volatile("cpuid"
@@ -11,15 +13,14 @@ void cpuid(int code, uint32_t* a, uint32_t* d) {
                  : "ecx", "ebx");
 }
 
+static inline void outw(uint16_t port, uint16_t val) {
+    __asm__ volatile ("outw %0, %1" : : "a"(val), "Nd"(port));
+}
 
-
-void shutdownAPM() {
-    asm volatile (
-        "mov $0x5307, %ax \n"
-        "mov $0x0001, %bx \n"
-        "mov $0x0003, %cx \n"
-        "int $0x15"
-    );
+void shutdownAPM()
+{
+    outw(0xB004, 0x0000);
+    outw(0x604, 0x2000); 
 }
 
 bool StrCmp(const char* str1, const char* str2)
@@ -69,4 +70,20 @@ int StrSlit(const char *str, char partes[3][32], char delim)
         }
     }
     return part;
+}
+
+void parse_command(char *input, char *args[], int *argc) {
+    *argc = 0;
+
+    while (*input) {
+        while (*input == ' ') input++;
+        if (*input == '\0') break;
+
+        args[(*argc)++] = input;
+
+        while (*input && *input != ' ') input++;
+        if (*input) *(input++) = '\0';
+
+        if (*argc >= MAX_ARGS) break;
+    }
 }

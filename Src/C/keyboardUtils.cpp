@@ -39,6 +39,17 @@ extern "C" char scancodeToIntChar(uint8_t scancode)
         case 0x2D: return 'X';
         case 0x15: return 'Y';
         case 0x2C: return 'Z';
+        case 0x39: return ' ';
+        case 0x0B: return '0';
+        case 0x02: return '1';
+        case 0x03: return '2';
+        case 0x04: return '3';
+        case 0x05: return '4';
+        case 0x06: return '5';
+        case 0x07: return '6';
+        case 0x08: return '7';
+        case 0x09: return '8';
+        case 0x0A: return '9';
         default: return '?';
     }
 }

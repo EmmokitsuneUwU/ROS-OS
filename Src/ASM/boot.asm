@@ -12,7 +12,7 @@ mov bp, 0x8000
 mov sp, bp
 
 mov bx, KERNEL_LOCATION
-mov dh, 20
+mov dh, 40
 
 mov ah, 0x02
 mov al, dh 
@@ -87,4 +87,4 @@ start_protected_mode:
                                      
  
 times 510-($-$$) db 0              
-dw 0xaa55
+db 0x55, 0xaa
