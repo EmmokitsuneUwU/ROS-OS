@@ -4,7 +4,6 @@
 #include "Math.hpp"
 #include "keyboardUtils.hpp"
 #include "Colors.hpp"
-
 #define MAX_ARGS 5
 
 char commandsBuffer[75];
