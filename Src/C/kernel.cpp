@@ -1,10 +1,9 @@
 #include <stdint.h>
-#include "keyboardUtils.hpp"
-#include "Colors.hpp"
 #include "VGA.hpp"
 #include "Util.hpp"
-#include "Pong.hpp"
 #include "Math.hpp"
+#include "keyboardUtils.hpp"
+#include "Colors.hpp"
 
 #define MAX_ARGS 5
 
@@ -13,6 +12,7 @@ int commandsBufferIndex = 0;
 bool isKeyPressed[256] = {false};
 
 extern "C" void main() {
+    clearScreen();
     printROSLogo();
 
     strPrint("Welcome to the", colorBrightWhite);
@@ -25,13 +25,13 @@ extern "C" void main() {
     strPrint("' to enter graphics mode \n", colorBrightWhite);
 
     while (1) {
-        uint8_t scancode = read_key_polling();
+        uint8_t scancode = read_key_polling(); // V
 
-        if (scancode != 0) {
-            bool isPressed = (scancode & 0x80) == 0;
+        if (scancode != 0) { //V
+            bool isPressed = (scancode & 0x80) == 0; // V
 
-            if (isPressed && !isKeyPressed[scancode]) {
-                isKeyPressed[scancode] = true;
+            if (isPressed && !isKeyPressed[scancode]) { // V
+                isKeyPressed[scancode] = true; // V
 
                 if (!onCommandMode && !onGraphicsMode) {
                     switch (scancode) {
@@ -57,7 +57,7 @@ extern "C" void main() {
                             break;
                     }
                 } 
-                else if (onCommandMode)
+                else if (onCommandMode) // The error is in the command mode
                 {
                     // Enter commands.
                     char c = scancodeToIntChar(scancode);
@@ -68,7 +68,7 @@ extern "C" void main() {
                     }
 
                     // If enter key is pressed, process the command.
-                    else if (scancode == 0x1C) 
+                    else if (scancode == 0x1C) // the os works fine here
                     {
                         charPrint('\n', colorBrightWhite);
                         commandsBuffer[commandsBufferIndex] = '\0';
@@ -77,6 +77,8 @@ extern "C" void main() {
                         int argc = 0;
                         parse_command(commandsBuffer, args, &argc);
 
+                        // the os works fine here :3
+                     
                         // arg 0 is the command itself.
                         if (argc > 0) 
                         {
@@ -96,6 +98,9 @@ extern "C" void main() {
                                 charPrint('G', colorRed);
                                 strPrint("' to enter graphics mode \n", colorBrightWhite);
                             }
+
+                            // si escribis mas de este punto va mal
+
                             else if (StrCmp(args[0], "TEST") && argc > 1)
                             {
                                 if(StrCmp(args[1], "DIGITCOUNT"))
@@ -130,14 +135,6 @@ extern "C" void main() {
                                 strPrint(kernelVersion, colorRed);
                                 strPrint("\n", colorBrightWhite);
                             } 
-                            else if (StrCmp(args[0], "PONG"))
-                            {
-                                strPrint("OK\n", colorBrightGreen);
-                                pongInit();
-                                while (1) {
-                                    pongUpdate();
-                                }
-                            }
                             else if(StrCmp(args[0], "SHUTDOWN"))
                             {
                                 strPrint("OK\n", colorBrightGreen);
@@ -192,11 +189,11 @@ extern "C" void main() {
                         }
                     }
                 }
-            }
+            } // V
         }
 
-        if (scancode != 0 && (scancode & 0x80)) {
-            isKeyPressed[scancode & 0x7F] = false;
-        }
+        if (scancode != 0 && (scancode & 0x80)) { // V
+            isKeyPressed[scancode & 0x7F] = false; // V
+        } // V
     }
 }

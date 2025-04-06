@@ -1,6 +1,8 @@
 #ifndef ROS_COLORS
 #define ROS_COLORS
 
+extern "C"
+{
 //Black background
 #define colorBlack         0x00
 #define colorBlue          0x01
@@ -18,5 +20,6 @@
 #define colorBrightMagenta 0x0D
 #define colorYellow        0x0E
 #define colorBrightWhite   0x0F
+}
 
 #endif

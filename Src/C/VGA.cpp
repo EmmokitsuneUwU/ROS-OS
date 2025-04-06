@@ -62,18 +62,19 @@ void GRAPHICSMODEDrawPixel(int pos_x, int pos_y, uint8_t VGA_COLOR)
 
 void clearScreen()
 {
-    for(int i = 0; i < characters; i++)
-    {
-        *(char*)(vidMemory - 2)= ' ';
-        vidMemory -= 2;
+    vidMemory = 0xB8000;
+    for (int i = 0; i < VGA_WIDTH * VGA_HEIGHT; i++) {
+        *(char*)(vidMemory + i * 2) = ' ';
+        *(char*)(vidMemory + i * 2 + 1) = 0x0F;
     }
     characters = 0;
-    vidMemory = 0xb8000;
+    vidMemory = 0xB8000;
 }
 
-void charPrint(int chr,uint8_t color = 0x0F)
+
+void charPrint(unsigned char chr,uint8_t color = 0x0F)
 {
-    if(vidMemory < 0xB8F95)
+    if (vidMemory <= 0xB8FA0 - 2)
     {
         if (chr == '\n') {
             unsigned int offset = vidMemory - 0xB8000;
